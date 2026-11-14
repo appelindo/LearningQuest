@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inventory, Learning Quest</title>
+<meta name="description" content="Inventory Learning Quest: tas berisi item hasil belajar, ramuan yang bisa dipakai, permata yang bisa dijual, dan peti hadiah yang dibuka dengan kunci.">
+<!--
+  Halaman Inventory penuh, halaman ketujuh Learning Quest.
+  Setiap item di tas ini punya asal yang jelas dari aktivitas belajar (hadiah modul, hadiah quest, temuan scenario),
+  bukan barang acak: peserta harus bisa menjawab "item ini kudapat dari mana".
+  Tiga aksi yang hidup di halaman ini: Pakai untuk item konsumsi (memberi efek yang terlihat, misalnya buff Fokus),
+  Jual untuk item koleksi (koin bertambah), dan Buka Peti yang mensyaratkan Kunci Peti, pasangan item yang
+  memang disimpan berdampingan. Klik kartu membuka detail item termasuk asal dan tingkat kelangkaannya.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{ --gold:#C9A227; --gold-2:#E8C766; --paper:#F5EFE0; --muted:#A7B0C2; --teal:#2DD4BF; --line:rgba(201,162,39,.45); }
+  *{box-sizing:border-box} html,body{margin:0;padding:0}
+  body{font-family:"Plus Jakarta Sans",system-ui,sans-serif;background:#0B111E;color:var(--paper);min-height:100dvh;overflow-x:hidden}
+  button,a{cursor:pointer;font:inherit}
+  :focus-visible{outline:3px solid var(--gold-2);outline-offset:2px;border-radius:8px}
+  .app{display:grid;grid-template-columns:272px minmax(0,1fr);min-height:100dvh}
+  .sidebar{background:linear-gradient(180deg,#131A29,#0D1320 70%);border-right:1px solid rgba(201,162,39,.35);padding:16px 14px;display:flex;flex-direction:column;gap:14px;position:relative;z-index:5}
+  .brand-plaque{display:flex;align-items:center;gap:10px;background:linear-gradient(180deg,#1E2A44,#141C2E);border:1.5px solid var(--gold);border-radius:6px 18px 6px 18px;padding:10px 12px;box-shadow:inset 0 0 0 3px rgba(0,0,0,.35)}
+  .brand-plaque .book{width:40px;height:40px;border-radius:10px;background:#2B1B4D;border:1.5px solid var(--gold-2);display:grid;place-items:center;flex:0 0 auto}
+  .brand-plaque b{font-family:"Cinzel",serif;font-size:19px;color:var(--gold-2);letter-spacing:.4px;line-height:1.1;display:block}
+  .brand-plaque span{font-size:11px;color:var(--muted);font-weight:700}
+  .profile{background:linear-gradient(120deg,#1C2740,#121A2C);border:1.5px solid var(--line);border-radius:14px;padding:14px}
+  .profile-top{display:flex;gap:12px;align-items:center}
+  .avatar{width:62px;height:62px;border-radius:50%;flex:0 0 auto;display:grid;place-items:center;background:radial-gradient(circle at 35% 30%,#FFE1B0,#D97706 78%);border:2.5px solid var(--gold-2);font-family:"Cinzel",serif;font-weight:800;font-size:24px;color:#2B1600}
+  .profile h2{margin:0;font-size:19px;color:#fff}
+  .profile .role{font-size:12.5px;color:#C7CFDE;font-weight:600;margin-top:2px}
+  .profile .role b{color:var(--gold-2)}
+  .xp-line{display:flex;justify-content:space-between;font-size:11.5px;font-weight:800;color:#C7CFDE;margin:12px 0 6px}
+  .xp-line span:first-child{background:#7C3AED;color:#fff;padding:2px 8px;border-radius:6px}
+  .bar{height:12px;background:#0A0F1B;border:1px solid rgba(255,255,255,.14);border-radius:999px;overflow:hidden}
+  .bar i{display:block;height:100%;width:83%;border-radius:999px;background:linear-gradient(90deg,#38BDF8,#8B5CF6)}
+  .sync-chip{margin-top:11px;display:flex;gap:8px;align-items:center;font-size:11.5px;font-weight:700;color:#99F6E4;background:rgba(15,118,110,.28);border:1px solid rgba(45,212,191,.35);padding:8px 10px;border-radius:10px;line-height:1.45}
+  .sync-dot{width:9px;height:9px;border-radius:50%;background:var(--teal);flex:0 0 auto}
+  nav.menu{display:flex;flex-direction:column;gap:4px}
+  .menu a{display:flex;align-items:center;gap:12px;width:100%;min-height:50px;padding:10px 13px;border-radius:12px;border:1px solid transparent;color:#D8DEEA;font-weight:700;font-size:15px;text-decoration:none;position:relative}
+  .menu a:hover{background:rgba(255,255,255,.05)}
+  .menu a.active{background:linear-gradient(90deg,rgba(201,162,39,.30),rgba(201,162,39,.10));border-color:var(--line);color:#FFE9A8}
+  .menu .ic{width:26px;text-align:center;font-size:18px;flex:0 0 auto}
+  .menu .dot{position:absolute;right:13px;top:50%;transform:translateY(-50%);background:#DC2626;color:#fff;font-size:11px;font-weight:800;min-width:20px;height:20px;border-radius:999px;display:grid;place-items:center;padding:0 5px}
+  .side-foot{margin-top:auto;display:flex;flex-direction:column;gap:9px}
+  .demo-note{font-size:11px;color:#7E8AA3;line-height:1.55;font-weight:600;background:rgba(255,255,255,.04);border:1px dashed rgba(255,255,255,.16);padding:9px 10px;border-radius:10px}
+  .btn-logout{display:flex;align-items:center;justify-content:center;min-height:46px;border-radius:12px;border:1.5px solid rgba(255,255,255,.18);color:#E5E9F2;text-decoration:none;font-weight:800;font-size:14px;background:rgba(255,255,255,.04)}
+  .btn-logout:hover{border-color:var(--gold);color:#FFE9A8}
+
+  .content{min-width:0;padding:24px 26px 32px}
+  .head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;flex-wrap:wrap}
+  .head h1{font-family:"Cinzel",serif;font-size:clamp(28px,3.6vw,40px);margin:0 0 6px;color:#fff}
+  .head p{margin:0;color:#C7CFDE;font-size:14.5px;font-weight:600;line-height:1.65;max-width:54em}
+  .head-stats{display:flex;gap:9px;flex-wrap:wrap}
+  .pill{display:flex;align-items:center;gap:9px;background:rgba(13,19,32,.9);border:1.5px solid var(--line);border-radius:999px;padding:8px 16px;font-weight:800;font-size:14.5px;color:#fff;min-height:46px}
+  .pill .coin{width:26px;height:26px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#FFE58A,#F59E0B 60%,#B45309);display:grid;place-items:center;color:#7C2D12;font-size:12px}
+  .buff{display:none;margin-top:14px;background:rgba(139,92,246,.13);border:1px solid rgba(139,92,246,.5);color:#DDD6FE;border-radius:13px;padding:12px 15px;font-size:14px;font-weight:700;line-height:1.6}
+  .buff.show{display:block}
+  .buff b{color:#fff}
+  .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0 16px}
+  .tab{min-height:46px;padding:9px 17px;border-radius:999px;border:1.5px solid rgba(255,255,255,.18);background:rgba(255,255,255,.04);color:#D8DEEA;font-weight:800;font-size:14px}
+  .tab:hover{border-color:var(--gold)}
+  .tab.on{background:var(--gold);border-color:var(--gold);color:#231a00}
+  .tab .n{background:rgba(0,0,0,.22);border-radius:999px;padding:1px 8px;font-size:12px;margin-left:5px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:14px}
+  .item{background:linear-gradient(180deg,#182238,#121A2C);border:1.5px solid rgba(255,255,255,.14);border-radius:17px;padding:17px 15px 14px;text-align:center;position:relative;animation:cardIn .5s cubic-bezier(.2,1,.3,1) both;transition:transform .15s,border-color .15s;width:100%;color:var(--paper)}
+  @keyframes cardIn{from{opacity:0;transform:translateY(13px)}to{opacity:1;transform:translateY(0)}}
+  .item:hover{transform:translateY(-3px);border-color:var(--gold)}
+  .item .i-ic{font-size:44px;line-height:1.15;display:block;margin-bottom:7px}
+  .item h3{margin:0 0 4px;font-size:15.5px;color:#fff;line-height:1.4}
+  .item .i-src{font-size:11.5px;color:var(--muted);font-weight:700;line-height:1.5;min-height:2.9em}
+  .qty{position:absolute;top:11px;right:11px;background:#0A0F1B;border:1px solid rgba(255,255,255,.25);color:#fff;font-weight:800;font-size:12.5px;border-radius:999px;padding:3px 10px}
+  .rarity{font-size:11px;font-weight:800;padding:4px 10px;border-radius:999px;display:inline-block;margin-bottom:9px}
+  .r-umum{background:rgba(148,163,184,.16);color:#CBD5E1;border:1px solid rgba(148,163,184,.45)}
+  .r-langka{background:rgba(56,189,248,.13);color:#7DD3FC;border:1px solid rgba(56,189,248,.45)}
+  .r-epik{background:rgba(167,139,250,.15);color:#C4B5FD;border:1px solid rgba(167,139,250,.5)}
+  .r-legenda{background:rgba(245,185,33,.15);color:#FDE68A;border:1px solid rgba(245,185,33,.55)}
+  .i-actions{display:flex;gap:7px;justify-content:center;flex-wrap:wrap}
+  .btn{min-height:44px;padding:8px 15px;border:0;border-radius:11px;font-weight:800;font-size:13.5px;transition:transform .15s}
+  .btn:hover{transform:translateY(-2px)}
+  .btn-use{background:var(--gold);color:#231a00}
+  .btn-sell{background:transparent;border:1.5px solid rgba(245,185,33,.55);color:#FCD34D}
+  .btn-chest{background:#22C55E;color:#05240F}
+  .btn:disabled{background:#374151;color:#9CA3AF;cursor:not-allowed;transform:none}
+  .btn-none{background:rgba(255,255,255,.06);color:#8B95AB;border:1px solid rgba(255,255,255,.14)}
+  .item.shake{animation:shakeX .5s ease}
+  @keyframes shakeX{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}45%{transform:translateX(7px)}70%{transform:translateX(-4px)}}
+  .empty{display:none;text-align:center;color:var(--muted);font-weight:700;font-size:14.5px;padding:36px 10px;border:1.5px dashed rgba(255,255,255,.16);border-radius:16px;line-height:1.7;grid-column:1/-1}
+
+  dialog{border:1.5px solid var(--gold);background:#141C2E;color:var(--paper);border-radius:18px;padding:0;max-width:min(92vw,430px);width:430px;box-shadow:0 30px 70px rgba(0,0,0,.6)}
+  dialog::backdrop{background:rgba(3,6,12,.72);backdrop-filter:blur(3px)}
+  .dlg-body{padding:24px 24px 20px;text-align:center}
+  .dlg-body .d-ic{font-size:58px;line-height:1.1}
+  .dlg-body h2{font-family:"Cinzel",serif;margin:8px 0 6px;font-size:21px;color:#fff}
+  .dlg-body p{color:#C7CFDE;font-size:14px;line-height:1.7;margin:0 0 10px}
+  .dlg-meta{display:flex;gap:7px;justify-content:center;flex-wrap:wrap;margin-bottom:15px}
+  .dlg-close{width:100%;min-height:48px;border:0;border-radius:12px;background:var(--gold);color:#231a00;font-weight:800;font-size:15px}
+  .toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,90px);z-index:60;max-width:min(92vw,500px);background:#0D1320;color:#fff;border:1.5px solid var(--gold);padding:14px 16px;border-radius:14px;font-size:14px;font-weight:600;line-height:1.55;box-shadow:0 18px 40px rgba(0,0,0,.5);transition:transform .4s cubic-bezier(.2,1.2,.3,1)}
+  .toast.show{transform:translate(-50%,0)}
+  .toast b{color:var(--gold-2)}
+  .burst-star{position:fixed;z-index:70;pointer-events:none}
+  @media (max-width:1080px){
+    .app{grid-template-columns:minmax(0,1fr)}
+    .sidebar{min-width:0;overflow:hidden}.sidebar>*{min-width:0}
+    nav.menu{flex-direction:row;overflow-x:auto;padding-bottom:4px;max-width:100%}
+    .menu a{white-space:nowrap;width:auto}
+    .side-foot{margin-top:0}
+    .content{padding:18px 14px 24px}
+  }
+  @media (prefers-reduced-motion: reduce){ *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important} }
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand-plaque">
+      <span class="book" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 6c-2-1.6-4.5-2-8-2v14c3.5 0 6 .4 8 2 2-1.6 4.5-2 8-2V4c-3.5 0-6 .4-8 2z" stroke="#E8C766" stroke-width="1.8"/><path d="M12 6v14" stroke="#E8C766" stroke-width="1.8"/></svg></span>
+      <span><b>Learning Quest</b><span>Pendamping LMS kantor</span></span>
+    </div>
+    <section class="profile" aria-label="Profil peserta, contoh tampilan">
+      <div class="profile-top">
+        <span class="avatar" aria-hidden="true">R</span>
+        <span><h2>Raka</h2><span class="role"><b>Lv. 12</b> Learning Explorer</span></span>
+      </div>
+      <div class="xp-line"><span>XP</span><span>7.450 / 9.000</span></div>
+      <div class="bar"><i></i></div>
+      <div class="sync-chip"><span class="sync-dot" aria-hidden="true"></span> Terhubung ke LMS kantor. Progres modulmu tercatat otomatis di sini.</div>
+    </section>
+    <nav class="menu" aria-label="Menu utama peserta">
+      <a href="dashboard-peserta-v2.html"><span class="ic" aria-hidden="true">⌂</span> Dashboard</a>
+      <a href="quests.html"><span class="ic" aria-hidden="true">⚔</span> Quests <span class="dot">1</span></a>
+      <a href="learning-path.html"><span class="ic" aria-hidden="true">🧭</span> Learning Path</a>
+      <a href="avatar-studio.html"><span class="ic" aria-hidden="true">🎭</span> Studio Avatar</a>
+      <a href="inventory.html" class="active"><span class="ic" aria-hidden="true">🎒</span> Inventory</a>
+      <a href="achievements.html"><span class="ic" aria-hidden="true">🏆</span> Achievements</a>
+      <a href="leaderboard.html"><span class="ic" aria-hidden="true">📊</span> Leaderboard</a>
+    </nav>
+    <div class="side-foot">
+      <p class="demo-note">Mode contoh: nama, angka, dan item di halaman ini adalah contoh tampilan untuk mockup, bukan data asli.</p>
+      <a class="btn-logout" href="login-peserta-v2.html">Keluar, kembali ke login</a>
+    </div>
+  </aside>
+
+  <main class="content">
+    <div class="head">
+      <div>
+        <h1>Inventory</h1>
+        <p>Tas penjelajahmu. Semua item di sini adalah hasil belajar, setiap barang punya cerita asalnya.</p>
+      </div>
+      <div class="head-stats">
+        <span class="pill"><span class="coin" aria-hidden="true">◉</span> <span id="coinText">1.250</span>&nbsp;koin</span>
+        <span class="pill">🎒 <span id="itemCount">0</span>&nbsp;jenis item</span>
+      </div>
+    </div>
+    <div class="buff" id="buffBox"></div>
+    <div class="tabs" id="tabs" role="group" aria-label="Saring item"></div>
+    <section class="grid" id="grid" aria-label="Daftar item"></section>
+    <p class="empty" id="empty">Tidak ada item pada saringan ini.</p>
+  </main>
+</div>
+
+<dialog id="dlgItem" aria-labelledby="dlgTitle">
+  <div class="dlg-body">
+    <span class="d-ic" id="dlgIcon" aria-hidden="true"></span>
+    <h2 id="dlgTitle"></h2>
+    <div class="dlg-meta" id="dlgMeta"></div>
+    <p id="dlgDesc"></p>
+    <p id="dlgSrc" style="font-size:12.5px;color:#8B95AB;font-weight:700"></p>
+    <button type="button" class="dlg-close" id="dlgClose">Tutup</button>
+  </div>
+</dialog>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+  "use strict";
+  var reduced=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var fmt=function(n){return n.toLocaleString("id-ID")};
+
+  var ITEMS=[
+    { id:"ramuan", icon:"🧪", name:"Ramuan Fokus", cat:"konsumsi", catLabel:"Konsumsi", rarity:"langka", qty:3,
+      desc:"Sekali teguk, pikiran jernih selama satu sesi belajar. Di versi asli, XP dari aktivitas berikutnya bertambah 50 persen.",
+      src:"Hadiah Quest Harian Rajin Belajar" },
+    { id:"kunci", icon:"🗝️", name:"Kunci Peti Emas", cat:"alat", catLabel:"Alat", rarity:"epik", qty:1,
+      desc:"Kunci untuk membuka Peti Hadiah. Sepasang dengan peti dari modul yang sama, jangan sampai terpisah.",
+      src:"Hadiah menuntaskan Modul 2" },
+    { id:"peti", icon:"🎁", name:"Peti Hadiah Modul 2", cat:"alat", catLabel:"Alat", rarity:"epik", qty:1, chest:true,
+      desc:"Peti kayu berlapis emas dari akhir Modul 2. Isinya kejutan, membukanya butuh Kunci Peti Emas.",
+      src:"Hadiah menuntaskan Modul 2" },
+    { id:"peta", icon:"🗺️", name:"Peta Jalur Pintas", cat:"alat", catLabel:"Alat", rarity:"langka", qty:1,
+      desc:"Menunjukkan jalan pintas meninjau materi lama di Learning Path tanpa mengulang dari awal.",
+      src:"Temuan Scenario Game, skor 85" },
+    { id:"permata", icon:"💎", name:"Permata Kecil", cat:"koleksi", catLabel:"Koleksi", rarity:"umum", qty:2, sell:25,
+      desc:"Permata mungil dari plaza kristal. Tidak memberi efek, tapi laku dijual ke pedagang akademi.",
+      src:"Hadiah Quest Utama pertama" },
+    { id:"kompas", icon:"🧭", name:"Kompas Akademi", cat:"alat", catLabel:"Alat", rarity:"epik", qty:1,
+      desc:"Jarumnya selalu menunjuk pemberhentian berikutnya di Learning Path. Barang kebanggaan para penjelajah.",
+      src:"Hadiah membuka Modul 3" },
+    { id:"buku", icon:"📕", name:"Buku Catatan Kulit", cat:"koleksi", catLabel:"Koleksi", rarity:"umum", qty:1,
+      desc:"Buku catatan pertama setiap peserta baru. Sampulnya mulai usang, isinya penuh coretan berharga.",
+      src:"Diberikan saat pertama masuk" },
+    { id:"tinta", icon:"🖋️", name:"Tinta Emas", cat:"konsumsi", catLabel:"Konsumsi", rarity:"umum", qty:2,
+      desc:"Tinta untuk menulis refleksi belajar. Refleksi yang ditulis dengan tinta ini tampil berbingkai emas di kelas.",
+      src:"Hadiah Diskusi Modul 1" }
+  ];
+  var RARITY={umum:"Umum", langka:"Langka", epik:"Epik", legenda:"Legenda"};
+  var state={ coins:1250, filter:"semua", buff:false };
+  var grid=document.getElementById("grid"), tabsEl=document.getElementById("tabs");
+  var toast=document.getElementById("toast"), toastTimer=null;
+  function showToast(html){ toast.innerHTML=html; toast.classList.add("show"); clearTimeout(toastTimer); toastTimer=setTimeout(function(){toast.classList.remove("show")},4400); }
+  function burst(anchor){
+    if(reduced||!anchor) return;
+    var r=anchor.getBoundingClientRect(), cx=r.left+r.width/2, cy=r.top+r.height/2, colors=["#E8C766","#2DD4BF","#C4B5FD","#fff"];
+    for(var i=0;i<16;i++){
+      var p=document.createElement("span"); p.className="burst-star"; var sz=5+Math.random()*7;
+      p.style.width=sz+"px"; p.style.height=sz+"px"; p.style.borderRadius=(Math.random()>.5?"50%":"2px");
+      p.style.background=colors[i%colors.length]; p.style.left=cx+"px"; p.style.top=cy+"px"; document.body.appendChild(p);
+      var ang=Math.random()*Math.PI*2, dist=48+Math.random()*105;
+      p.animate([{transform:"translate(0,0) scale(1)",opacity:1},{transform:"translate("+(Math.cos(ang)*dist)+"px,"+(Math.sin(ang)*dist-22)+"px) scale(.3) rotate(140deg)",opacity:0}],{duration:680+Math.random()*380,easing:"cubic-bezier(.2,.8,.3,1)"}).onfinish=(function(el){return function(){el.remove()}})(p);
+    }
+  }
+  var FILTERS=[["semua","Semua"],["konsumsi","Konsumsi"],["alat","Alat"],["koleksi","Koleksi"]];
+  function renderTabs(){
+    tabsEl.innerHTML=FILTERS.map(function(f){
+      var n=f[0]==="semua"?ITEMS.filter(function(i){return i.qty>0}).length:ITEMS.filter(function(i){return i.cat===f[0]&&i.qty>0}).length;
+      return '<button type="button" class="tab'+(state.filter===f[0]?" on":"")+'" data-filter="'+f[0]+'">'+f[1]+'<span class="n">'+n+'</span></button>';
+    }).join("");
+    tabsEl.querySelectorAll(".tab").forEach(function(t){ t.addEventListener("click",function(){ state.filter=t.getAttribute("data-filter"); renderAll(); }); });
+  }
+  function actionsFor(it){
+    if(it.chest){
+      var key=ITEMS.find(function(x){return x.id==="kunci"});
+      var can=key && key.qty>0 && it.qty>0;
+      return '<button type="button" class="btn btn-chest" data-chest="1" '+(can?"":"disabled")+'>'+(can?"Buka Peti":"Butuh Kunci Peti")+'</button>';
+    }
+    if(it.cat==="konsumsi") return '<button type="button" class="btn btn-use" data-use="'+it.id+'">Pakai</button>';
+    if(it.sell) return '<button type="button" class="btn btn-sell" data-sell="'+it.id+'">Jual +'+it.sell+' koin</button>';
+    return '<button type="button" class="btn btn-none" disabled>Barang koleksi</button>';
+  }
+  function renderGrid(){
+    var list=ITEMS.filter(function(i){ return i.qty>0 && (state.filter==="semua"||i.cat===state.filter); });
+    document.getElementById("empty").style.display=list.length?"none":"block";
+    grid.innerHTML="";
+    list.forEach(function(it,idx){
+      var card=document.createElement("article");
+      card.className="item"; card.id="item-"+it.id; card.style.animationDelay=(idx*0.06)+"s";
+      card.innerHTML='<span class="qty" aria-label="Jumlah">×'+it.qty+'</span><span class="i-ic" aria-hidden="true">'+it.icon+'</span><h3>'+it.name+'</h3><span class="rarity r-'+it.rarity+'">'+RARITY[it.rarity]+' • '+it.catLabel+'</span><p class="i-src">'+it.src+'</p><div class="i-actions">'+actionsFor(it)+'</div>';
+      card.addEventListener("click",function(e){ if(e.target.closest("button")) return; openDetail(it); });
+      grid.appendChild(card);
+    });
+    grid.querySelectorAll("[data-use]").forEach(function(b){ b.addEventListener("click",function(){ useItem(b.getAttribute("data-use"), b); }); });
+    grid.querySelectorAll("[data-sell]").forEach(function(b){ b.addEventListener("click",function(){ sellItem(b.getAttribute("data-sell"), b); }); });
+    grid.querySelectorAll("[data-chest]").forEach(function(b){ b.addEventListener("click",function(){ openChest(b); }); });
+    document.getElementById("itemCount").textContent=ITEMS.filter(function(i){return i.qty>0}).length;
+    document.getElementById("coinText").textContent=fmt(state.coins);
+  }
+  function renderAll(){ renderTabs(); renderGrid(); }
+
+  function useItem(id, btn){
+    var it=ITEMS.find(function(x){return x.id===id}); if(!it||it.qty<1) return;
+    it.qty-=1; burst(btn);
+    if(id==="ramuan"){
+      state.buff=true;
+      var box=document.getElementById("buffBox");
+      box.classList.add("show");
+      box.innerHTML="🧪 <b>Fokus aktif.</b> Di versi asli, XP dari aktivitas belajarmu berikutnya bertambah 50 persen. Minum lagi untuk menumpuk waktunya.";
+      showToast("<span><b>Ramuan Fokus diminum.</b><br>Sisa ramuan "+it.qty+". Efek fokus menyala di bagian atas tas.</span>");
+    } else if(id==="peta"){
+      showToast("<span><b>Peta Jalur Pintas dibuka.</b><br>Di versi asli, Learning Path menandai materi lama yang paling layak ditinjau ulang lebih dulu.</span>");
+    } else if(id==="tinta"){
+      showToast("<span><b>Tinta Emas dipakai.</b><br>Refleksi belajarmu berikutnya tampil berbingkai emas di kelas.</span>");
+    }
+    renderAll();
+  }
+  function sellItem(id, btn){
+    var it=ITEMS.find(function(x){return x.id===id}); if(!it||it.qty<1) return;
+    it.qty-=1; state.coins+=it.sell; burst(btn); renderAll();
+    showToast("<span><b>"+it.name+" terjual.</b><br>+"+it.sell+" koin masuk ke kantongmu. Sisa permata "+it.qty+".</span>");
+  }
+  function openChest(btn){
+    var peti=ITEMS.find(function(x){return x.id==="peti"}), kunci=ITEMS.find(function(x){return x.id==="kunci"});
+    if(!peti||!kunci||peti.qty<1||kunci.qty<1) return;
+    var card=document.getElementById("item-peti");
+    card.classList.remove("shake"); void card.offsetWidth; card.classList.add("shake");
+    setTimeout(function(){
+      peti.qty-=1; kunci.qty-=1; state.coins+=150;
+      var star=ITEMS.find(function(x){return x.id==="bintang"});
+      if(!star){
+        ITEMS.push({ id:"bintang", icon:"⭐", name:"Bintang Keberuntungan", cat:"koleksi", catLabel:"Koleksi", rarity:"legenda", qty:1,
+          desc:"Bintang kecil yang bercahaya pelan. Konon pemiliknya lebih sering menemukan quest langka.",
+          src:"Isi Peti Hadiah Modul 2" });
+      } else star.qty+=1;
+      renderAll();
+      burst(document.getElementById("item-bintang")||btn);
+      showToast("<span><b>Peti terbuka.</b><br>Isinya 150 koin dan <b>Bintang Keberuntungan</b>, item legenda yang sekarang ada di tasmu.</span>");
+    }, reduced?60:520);
+  }
+
+  var dlg=document.getElementById("dlgItem");
+  function openDetail(it){
+    document.getElementById("dlgIcon").textContent=it.icon;
+    document.getElementById("dlgTitle").textContent=it.name;
+    document.getElementById("dlgMeta").innerHTML='<span class="rarity r-'+it.rarity+'">'+RARITY[it.rarity]+'</span><span class="rarity r-umum">'+it.catLabel+'</span><span class="rarity r-umum">Jumlah ×'+it.qty+'</span>';
+    document.getElementById("dlgDesc").textContent=it.desc;
+    document.getElementById("dlgSrc").textContent="Asal: "+it.src;
+    dlg.showModal();
+  }
+  document.getElementById("dlgClose").addEventListener("click",function(){ dlg.close(); });
+  dlg.addEventListener("click",function(e){ if(e.target===dlg) dlg.close(); });
+
+  renderAll();
+})();
+</script>
+</body>
+</html>

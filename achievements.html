@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Achievements, Learning Quest</title>
+<meta name="description" content="Achievements Learning Quest: koleksi lencana peserta, yang sudah diraih dan yang sedang dikejar lengkap dengan progres dan syaratnya.">
+<!--
+  Halaman Achievements penuh, halaman kedelapan Learning Quest.
+  Lencana di sini bukan pajangan acak: setiap lencana terikat ke perilaku belajar yang ingin ditumbuhkan
+  (menuntaskan modul, konsisten hadir, menjawab kuis dengan baik, menyemangati teman), dan lencana yang
+  belum diraih selalu menunjukkan progres serta syarat persisnya, supaya peserta tahu langkah berikutnya.
+  Kartu "Selangkah Lagi" dihitung dari lencana belum diraih dengan progres tertinggi, bukan dipilih manual.
+  Klik lencana membuka detailnya: kapan diraih dan hadiahnya, atau apa yang kurang untuk meraihnya.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{ --gold:#C9A227; --gold-2:#E8C766; --paper:#F5EFE0; --muted:#A7B0C2; --teal:#2DD4BF; --line:rgba(201,162,39,.45); }
+  *{box-sizing:border-box} html,body{margin:0;padding:0}
+  body{font-family:"Plus Jakarta Sans",system-ui,sans-serif;background:#0B111E;color:var(--paper);min-height:100dvh;overflow-x:hidden}
+  button,a{cursor:pointer;font:inherit}
+  :focus-visible{outline:3px solid var(--gold-2);outline-offset:2px;border-radius:8px}
+  .app{display:grid;grid-template-columns:272px minmax(0,1fr);min-height:100dvh}
+  .sidebar{background:linear-gradient(180deg,#131A29,#0D1320 70%);border-right:1px solid rgba(201,162,39,.35);padding:16px 14px;display:flex;flex-direction:column;gap:14px;position:relative;z-index:5}
+  .brand-plaque{display:flex;align-items:center;gap:10px;background:linear-gradient(180deg,#1E2A44,#141C2E);border:1.5px solid var(--gold);border-radius:6px 18px 6px 18px;padding:10px 12px;box-shadow:inset 0 0 0 3px rgba(0,0,0,.35)}
+  .brand-plaque .book{width:40px;height:40px;border-radius:10px;background:#2B1B4D;border:1.5px solid var(--gold-2);display:grid;place-items:center;flex:0 0 auto}
+  .brand-plaque b{font-family:"Cinzel",serif;font-size:19px;color:var(--gold-2);letter-spacing:.4px;line-height:1.1;display:block}
+  .brand-plaque span{font-size:11px;color:var(--muted);font-weight:700}
+  .profile{background:linear-gradient(120deg,#1C2740,#121A2C);border:1.5px solid var(--line);border-radius:14px;padding:14px}
+  .profile-top{display:flex;gap:12px;align-items:center}
+  .avatar{width:62px;height:62px;border-radius:50%;flex:0 0 auto;display:grid;place-items:center;background:radial-gradient(circle at 35% 30%,#FFE1B0,#D97706 78%);border:2.5px solid var(--gold-2);font-family:"Cinzel",serif;font-weight:800;font-size:24px;color:#2B1600}
+  .profile h2{margin:0;font-size:19px;color:#fff}
+  .profile .role{font-size:12.5px;color:#C7CFDE;font-weight:600;margin-top:2px}
+  .profile .role b{color:var(--gold-2)}
+  .xp-line{display:flex;justify-content:space-between;font-size:11.5px;font-weight:800;color:#C7CFDE;margin:12px 0 6px}
+  .xp-line span:first-child{background:#7C3AED;color:#fff;padding:2px 8px;border-radius:6px}
+  .bar{height:12px;background:#0A0F1B;border:1px solid rgba(255,255,255,.14);border-radius:999px;overflow:hidden}
+  .bar i{display:block;height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,#38BDF8,#8B5CF6);transition:width 1s cubic-bezier(.2,.8,.2,1)}
+  .sync-chip{margin-top:11px;display:flex;gap:8px;align-items:center;font-size:11.5px;font-weight:700;color:#99F6E4;background:rgba(15,118,110,.28);border:1px solid rgba(45,212,191,.35);padding:8px 10px;border-radius:10px;line-height:1.45}
+  .sync-dot{width:9px;height:9px;border-radius:50%;background:var(--teal);flex:0 0 auto}
+  nav.menu{display:flex;flex-direction:column;gap:4px}
+  .menu a{display:flex;align-items:center;gap:12px;width:100%;min-height:50px;padding:10px 13px;border-radius:12px;border:1px solid transparent;color:#D8DEEA;font-weight:700;font-size:15px;text-decoration:none;position:relative}
+  .menu a:hover{background:rgba(255,255,255,.05)}
+  .menu a.active{background:linear-gradient(90deg,rgba(201,162,39,.30),rgba(201,162,39,.10));border-color:var(--line);color:#FFE9A8}
+  .menu .ic{width:26px;text-align:center;font-size:18px;flex:0 0 auto}
+  .menu .dot{position:absolute;right:13px;top:50%;transform:translateY(-50%);background:#DC2626;color:#fff;font-size:11px;font-weight:800;min-width:20px;height:20px;border-radius:999px;display:grid;place-items:center;padding:0 5px}
+  .side-foot{margin-top:auto;display:flex;flex-direction:column;gap:9px}
+  .demo-note{font-size:11px;color:#7E8AA3;line-height:1.55;font-weight:600;background:rgba(255,255,255,.04);border:1px dashed rgba(255,255,255,.16);padding:9px 10px;border-radius:10px}
+  .btn-logout{display:flex;align-items:center;justify-content:center;min-height:46px;border-radius:12px;border:1.5px solid rgba(255,255,255,.18);color:#E5E9F2;text-decoration:none;font-weight:800;font-size:14px;background:rgba(255,255,255,.04)}
+  .btn-logout:hover{border-color:var(--gold);color:#FFE9A8}
+
+  .content{min-width:0;padding:24px 26px 32px}
+  .head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;flex-wrap:wrap}
+  .head h1{font-family:"Cinzel",serif;font-size:clamp(28px,3.6vw,40px);margin:0 0 6px;color:#fff}
+  .head p{margin:0;color:#C7CFDE;font-size:14.5px;font-weight:600;line-height:1.65;max-width:54em}
+  .head-stats{display:flex;gap:9px;flex-wrap:wrap}
+  .pill{display:flex;align-items:center;gap:9px;background:rgba(13,19,32,.9);border:1.5px solid var(--line);border-radius:999px;padding:8px 16px;font-weight:800;font-size:14.5px;color:#fff;min-height:46px}
+  .next-card{margin-top:16px;background:linear-gradient(90deg,rgba(245,185,33,.16),rgba(24,34,56,.9));border:1.5px solid rgba(245,185,33,.55);border-radius:16px;padding:15px 18px;display:flex;gap:15px;align-items:center;flex-wrap:wrap}
+  .next-card .n-ic{font-size:36px}
+  .next-card .n-main{flex:1;min-width:230px}
+  .next-card h2{margin:0 0 3px;font-size:16.5px;color:#fff}
+  .next-card p{margin:0;font-size:13px;color:#D8DEEA;font-weight:600;line-height:1.6}
+  .next-card .bar{margin-top:8px}
+  .next-card .bar i{background:linear-gradient(90deg,#F59E0B,#F5B921)}
+  .next-card .n-pct{font-family:"Cinzel",serif;font-size:26px;color:#FDE68A;font-weight:800}
+  .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0 16px}
+  .tab{min-height:46px;padding:9px 17px;border-radius:999px;border:1.5px solid rgba(255,255,255,.18);background:rgba(255,255,255,.04);color:#D8DEEA;font-weight:800;font-size:14px}
+  .tab:hover{border-color:var(--gold)}
+  .tab.on{background:var(--gold);border-color:var(--gold);color:#231a00}
+  .tab .n{background:rgba(0,0,0,.22);border-radius:999px;padding:1px 8px;font-size:12px;margin-left:5px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(228px,1fr));gap:14px}
+  .badge{background:linear-gradient(180deg,#182238,#121A2C);border:1.5px solid rgba(255,255,255,.14);border-radius:17px;padding:18px 15px 14px;text-align:center;position:relative;animation:cardIn .5s cubic-bezier(.2,1,.3,1) both;transition:transform .15s,border-color .15s;width:100%;color:var(--paper)}
+  @keyframes cardIn{from{opacity:0;transform:translateY(13px)}to{opacity:1;transform:translateY(0)}}
+  .badge:hover{transform:translateY(-3px);border-color:var(--gold)}
+  .badge .b-medal{width:84px;height:84px;margin:0 auto 10px;border-radius:50%;display:grid;place-items:center;font-size:38px;background:radial-gradient(circle at 35% 30%,#FFE9A8,#F5B921 55%,#B45309);border:3px solid #FDE68A;box-shadow:0 12px 24px rgba(0,0,0,.35);position:relative}
+  .badge.locked .b-medal{background:radial-gradient(circle at 35% 30%,#475569,#26314A 60%,#141C2E);border-color:rgba(255,255,255,.22);filter:grayscale(.7);box-shadow:none}
+  .badge.new .b-medal::after{content:"BARU";position:absolute;top:-9px;right:-16px;background:#DC2626;color:#fff;font-size:10px;font-weight:800;padding:3px 8px;border-radius:999px;animation:bob 2s ease-in-out infinite}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+  .badge.new .b-medal{animation:shine 2.6s ease-in-out infinite}
+  @keyframes shine{0%,100%{box-shadow:0 12px 24px rgba(0,0,0,.35)}50%{box-shadow:0 12px 34px rgba(245,185,33,.55)}}
+  .badge h3{margin:0 0 4px;font-size:15.5px;color:#fff;line-height:1.4}
+  .badge .b-req{font-size:12px;color:var(--muted);font-weight:600;line-height:1.55;min-height:3.6em;margin:0}
+  .badge .b-state{font-size:12px;font-weight:800;margin-top:8px}
+  .badge .b-state.earned{color:#4ADE80}
+  .badge .b-state.progress{color:#FDE68A}
+  .badge .b-prog{display:flex;align-items:center;gap:8px;margin-top:8px}
+  .badge .b-prog .bar{flex:1;height:9px}
+  .badge .b-prog .bar i{background:linear-gradient(90deg,#F59E0B,#F5B921)}
+  .badge .b-prog b{font-size:12px;color:#FDE68A;white-space:nowrap}
+  .badge .b-xp{margin-top:9px;display:inline-block;background:rgba(139,92,246,.16);color:#C4B5FD;border:1px solid rgba(139,92,246,.4);font-size:11.5px;font-weight:800;padding:4px 10px;border-radius:999px}
+  dialog{border:1.5px solid var(--gold);background:#141C2E;color:var(--paper);border-radius:18px;padding:0;max-width:min(92vw,430px);width:430px;box-shadow:0 30px 70px rgba(0,0,0,.6)}
+  dialog::backdrop{background:rgba(3,6,12,.72);backdrop-filter:blur(3px)}
+  .dlg-body{padding:24px 24px 20px;text-align:center}
+  .dlg-body .d-medal{width:96px;height:96px;margin:0 auto;border-radius:50%;display:grid;place-items:center;font-size:44px;background:radial-gradient(circle at 35% 30%,#FFE9A8,#F5B921 55%,#B45309);border:3px solid #FDE68A}
+  .dlg-body .d-medal.lock{background:radial-gradient(circle at 35% 30%,#475569,#26314A 60%,#141C2E);border-color:rgba(255,255,255,.22);filter:grayscale(.7)}
+  .dlg-body h2{font-family:"Cinzel",serif;margin:10px 0 6px;font-size:21px;color:#fff}
+  .dlg-body p{color:#C7CFDE;font-size:14px;line-height:1.7;margin:0 0 10px}
+  .dlg-body .d-state{font-weight:800;font-size:13.5px}
+  .dlg-close{width:100%;min-height:48px;border:0;border-radius:12px;background:var(--gold);color:#231a00;font-weight:800;font-size:15px;margin-top:13px}
+  .toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,90px);z-index:60;max-width:min(92vw,500px);background:#0D1320;color:#fff;border:1.5px solid var(--gold);padding:14px 16px;border-radius:14px;font-size:14px;font-weight:600;line-height:1.55;box-shadow:0 18px 40px rgba(0,0,0,.5);transition:transform .4s cubic-bezier(.2,1.2,.3,1)}
+  .toast.show{transform:translate(-50%,0)}
+  .toast b{color:var(--gold-2)}
+  @media (max-width:1080px){
+    .app{grid-template-columns:minmax(0,1fr)}
+    .sidebar{min-width:0;overflow:hidden}.sidebar>*{min-width:0}
+    nav.menu{flex-direction:row;overflow-x:auto;padding-bottom:4px;max-width:100%}
+    .menu a{white-space:nowrap;width:auto}
+    .side-foot{margin-top:0}
+    .content{padding:18px 14px 24px}
+  }
+  @media (prefers-reduced-motion: reduce){ *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important} }
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand-plaque">
+      <span class="book" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 6c-2-1.6-4.5-2-8-2v14c3.5 0 6 .4 8 2 2-1.6 4.5-2 8-2V4c-3.5 0-6 .4-8 2z" stroke="#E8C766" stroke-width="1.8"/><path d="M12 6v14" stroke="#E8C766" stroke-width="1.8"/></svg></span>
+      <span><b>Learning Quest</b><span>Pendamping LMS kantor</span></span>
+    </div>
+    <section class="profile" aria-label="Profil peserta, contoh tampilan">
+      <div class="profile-top">
+        <span class="avatar" aria-hidden="true">R</span>
+        <span><h2>Raka</h2><span class="role"><b>Lv. 12</b> Learning Explorer</span></span>
+      </div>
+      <div class="xp-line"><span>XP</span><span>7.450 / 9.000</span></div>
+      <div class="bar"><i style="width:83%"></i></div>
+      <div class="sync-chip"><span class="sync-dot" aria-hidden="true"></span> Terhubung ke LMS kantor. Progres modulmu tercatat otomatis di sini.</div>
+    </section>
+    <nav class="menu" aria-label="Menu utama peserta">
+      <a href="dashboard-peserta-v2.html"><span class="ic" aria-hidden="true">⌂</span> Dashboard</a>
+      <a href="quests.html"><span class="ic" aria-hidden="true">⚔</span> Quests <span class="dot">1</span></a>
+      <a href="learning-path.html"><span class="ic" aria-hidden="true">🧭</span> Learning Path</a>
+      <a href="avatar-studio.html"><span class="ic" aria-hidden="true">🎭</span> Studio Avatar</a>
+      <a href="inventory.html"><span class="ic" aria-hidden="true">🎒</span> Inventory</a>
+      <a href="achievements.html" class="active"><span class="ic" aria-hidden="true">🏆</span> Achievements</a>
+      <a href="leaderboard.html"><span class="ic" aria-hidden="true">📊</span> Leaderboard</a>
+    </nav>
+    <div class="side-foot">
+      <p class="demo-note">Mode contoh: nama, angka, dan lencana di halaman ini adalah contoh tampilan untuk mockup, bukan data asli.</p>
+      <a class="btn-logout" href="login-peserta-v2.html">Keluar, kembali ke login</a>
+    </div>
+  </aside>
+
+  <main class="content">
+    <div class="head">
+      <div>
+        <h1>Achievements</h1>
+        <p>Koleksi lencanamu. Setiap lencana adalah bukti perilaku belajar yang baik, bukan sekadar pajangan.</p>
+      </div>
+      <div class="head-stats">
+        <span class="pill">🏅 <span id="badgeCount">0 dari 12</span>&nbsp;lencana</span>
+        <span class="pill">⬢ <span id="badgeXp">0</span>&nbsp;XP dari lencana</span>
+      </div>
+    </div>
+
+    <section class="next-card" id="nextCard" aria-label="Lencana terdekat berikutnya"></section>
+    <div class="tabs" id="tabs" role="group" aria-label="Saring lencana"></div>
+    <section class="grid" id="grid" aria-label="Daftar lencana"></section>
+  </main>
+</div>
+
+<dialog id="dlgBadge" aria-labelledby="dlgTitle">
+  <div class="dlg-body">
+    <span class="d-medal" id="dlgMedal" aria-hidden="true"></span>
+    <h2 id="dlgTitle"></h2>
+    <p class="d-state" id="dlgState"></p>
+    <p id="dlgDesc"></p>
+    <p id="dlgReward" style="font-size:12.5px;color:#8B95AB;font-weight:700"></p>
+    <button type="button" class="dlg-close" id="dlgClose">Tutup</button>
+  </div>
+</dialog>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+  "use strict";
+  var BADGES=[
+    { id:"b1", icon:"🚪", name:"Langkah Pertama", req:"Selesaikan modul pertamamu", earned:true, date:"12 Oktober 2026", xp:50,
+      desc:"Diberikan saat modul pertama tuntas. Semua penjelajah besar mulai dari satu gerbang." },
+    { id:"b2", icon:"🔥", name:"Rajin 5 Hari", req:"Belajar 5 hari berturut-turut", earned:true, isNew:true, date:"Baru saja, dari Quest Mingguan", xp:100,
+      desc:"Rangkaian belajarmu menyala 5 hari tanpa putus. Konsistensi mengalahkan semangat sesaat." },
+    { id:"b3", icon:"⏰", name:"Tepat Waktu", req:"Kumpulkan 5 aktivitas sebelum tenggat", earned:true, date:"28 Oktober 2026", xp:60,
+      desc:"Lima aktivitas selesai sebelum tenggatnya. Pengajar menyukai peserta seperti ini." },
+    { id:"b4", icon:"📚", name:"Pembaca Tekun", req:"Selesaikan 10 bacaan di LMS", earned:true, date:"2 November 2026", xp:60,
+      desc:"Sepuluh bacaan tuntas dibaca, bukan sekadar dibuka. Pengetahuanmu bertambah nyata." },
+    { id:"b5", icon:"🎯", name:"Penjawab Kuis", req:"Raih skor kuis 90 atau lebih", earned:true, date:"5 November 2026", xp:80,
+      desc:"Skor 90 di Kuis Modul 1 membuktikan fondasimu kuat." },
+    { id:"b6", icon:"💛", name:"Teman Baik", req:"Beri semangat pertamamu ke teman sekelas", earned:true, date:"9 November 2026", xp:30,
+      desc:"Semangat pertama yang kamu kirim. Kelas yang saling menyemangati belajar lebih jauh." },
+    { id:"b7", icon:"🎮", name:"Bintang Scenario", req:"Capai skor 85 di Scenario Game", earned:true, date:"11 November 2026", xp:120,
+      desc:"Keputusanmu saat proyek krisis dinilai 85. Tenang, terukur, dan berpihak pada data." },
+    { id:"b8", icon:"🗺️", name:"Penakluk Course", req:"Tuntaskan semua 5 modul Project Management", earned:false, cur:3, max:5, unit:"modul", xp:250,
+      desc:"Lencana utama course ini. Tiga modul sudah tuntas, dua lagi menuju sertifikat." },
+    { id:"b9", icon:"🎒", name:"Kolektor Item", req:"Miliki 10 jenis item di Inventory", earned:false, cur:8, max:10, unit:"jenis item", xp:90,
+      desc:"Tasmu hampir penuh. Dua jenis item lagi, dari quest atau peti berikutnya." },
+    { id:"b10", icon:"🏃", name:"Maraton Belajar", req:"Belajar 7 hari berturut-turut", earned:false, cur:5, max:7, unit:"hari", xp:150,
+      desc:"Naik tingkat dari Rajin 5 Hari. Dua hari lagi rangkaianmu jadi maraton." },
+    { id:"b11", icon:"💯", name:"Sempurna", req:"Raih skor 100 di kuis mana pun", earned:false, cur:0, max:1, unit:"kuis sempurna", xp:200,
+      desc:"Satu kuis tanpa cela. Kuis Modul 3 yang sedang berjalan adalah kesempatan terdekatmu." },
+    { id:"b12", icon:"👑", name:"Legenda Kelas", req:"Capai peringkat 1 di kelasmu", earned:false, cur:4, max:1, unit:"peringkat", rankMode:true, xp:300,
+      desc:"Puncak papan peringkat kelas. Kamu sekarang peringkat 4, jalannya masih panjang tapi terlihat." }
+  ];
+  var state={ filter:"semua" };
+  var grid=document.getElementById("grid"), tabsEl=document.getElementById("tabs");
+  var toast=document.getElementById("toast"), toastTimer=null;
+  function showToast(html){ toast.innerHTML=html; toast.classList.add("show"); clearTimeout(toastTimer); toastTimer=setTimeout(function(){toast.classList.remove("show")},4000); }
+
+  function pct(b){ return b.rankMode ? Math.round((1-(b.cur-1)/7)*100) : Math.round(b.cur/b.max*100); }
+  function renderNext(){
+    var locked=BADGES.filter(function(b){return !b.earned});
+    locked.sort(function(a,b2){ return pct(b2)-pct(a); });
+    var n=locked[0];
+    document.getElementById("nextCard").innerHTML=
+      '<span class="n-ic" aria-hidden="true">'+n.icon+'</span><span class="n-main"><h2>Selangkah Lagi: '+n.name+'</h2><p>'+n.req+'. Progresmu '+n.cur+' dari '+n.max+' '+n.unit+'.</p><span class="bar" style="display:block"><i style="width:'+pct(n)+'%"></i></span></span><span class="n-pct">'+pct(n)+'%</span>';
+  }
+  var FILTERS=[["semua","Semua"],["diraih","Sudah Diraih"],["belum","Belum Diraih"]];
+  function renderTabs(){
+    tabsEl.innerHTML=FILTERS.map(function(f){
+      var n=f[0]==="semua"?BADGES.length:f[0]==="diraih"?BADGES.filter(function(b){return b.earned}).length:BADGES.filter(function(b){return !b.earned}).length;
+      return '<button type="button" class="tab'+(state.filter===f[0]?" on":"")+'" data-filter="'+f[0]+'">'+f[1]+'<span class="n">'+n+'</span></button>';
+    }).join("");
+    tabsEl.querySelectorAll(".tab").forEach(function(t){ t.addEventListener("click",function(){ state.filter=t.getAttribute("data-filter"); renderAll(); }); });
+  }
+  function renderGrid(){
+    var list=BADGES.filter(function(b){ return state.filter==="semua" || (state.filter==="diraih"?b.earned:!b.earned); });
+    grid.innerHTML="";
+    list.forEach(function(b,idx){
+      var card=document.createElement("button");
+      card.type="button";
+      card.className="badge"+(b.earned?"":" locked")+(b.isNew?" new":"");
+      card.style.animationDelay=(idx*0.05)+"s"; card.id="badge-"+b.id;
+      var foot=b.earned
+        ? '<p class="b-state earned">✓ Diraih, '+b.date+'</p>'
+        : '<div class="b-prog"><span class="bar"><i style="width:'+pct(b)+'%"></i></span><b>'+b.cur+' / '+b.max+'</b></div><p class="b-state progress">Sedang dikejar</p>';
+      card.innerHTML='<span class="b-medal" aria-hidden="true">'+b.icon+'</span><h3>'+b.name+'</h3><p class="b-req">'+b.req+'</p>'+foot+'<span class="b-xp">⬢ +'+b.xp+' XP</span>';
+      card.addEventListener("click",function(){ openDetail(b); });
+      grid.appendChild(card);
+    });
+    var earned=BADGES.filter(function(b){return b.earned});
+    document.getElementById("badgeCount").textContent=earned.length+" dari "+BADGES.length;
+    document.getElementById("badgeXp").textContent=earned.reduce(function(s,b){return s+b.xp},0).toLocaleString("id-ID");
+  }
+  function renderAll(){ renderNext(); renderTabs(); renderGrid(); }
+
+  var dlg=document.getElementById("dlgBadge");
+  function openDetail(b){
+    var medal=document.getElementById("dlgMedal");
+    medal.textContent=b.icon; medal.className="d-medal"+(b.earned?"":" lock");
+    document.getElementById("dlgTitle").textContent=b.name;
+    var st=document.getElementById("dlgState");
+    st.textContent=b.earned?("✓ Diraih, "+b.date):("Belum diraih, progres "+b.cur+" dari "+b.max+" "+b.unit+" ("+pct(b)+"%)");
+    st.style.color=b.earned?"#4ADE80":"#FDE68A";
+    document.getElementById("dlgDesc").textContent=b.desc;
+    document.getElementById("dlgReward").textContent="Syarat: "+b.req+" • Hadiah: +"+b.xp+" XP";
+    dlg.showModal();
+  }
+  document.getElementById("dlgClose").addEventListener("click",function(){ dlg.close(); });
+  dlg.addEventListener("click",function(e){ if(e.target===dlg) dlg.close(); });
+
+  renderAll();
+})();
+</script>
+</body>
+</html>
